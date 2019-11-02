@@ -3,31 +3,34 @@ import ReactDOM from 'react-dom';
 import './index.css';
 class Square extends React.Component {
 	render() {
+		const cellId = "cell-" + this.props.rowindex + "-" + this.props.cellindex;
+		const selectedState =this.props.activecell == cellId ? "true" : "false";
 		return (
 			<div role="gridcell" 
 				aria-roledescription="cellButton"
-				id={ () => { return "cell-" + this.props.rowIndex + "-" + this.props.cellIndex}}>
-				<button className="square" tabIndex="-1" 
-				aria-selected={() => {return this.props.activeCell == "cell-" + this.props.rowIndex + "-" + this.props.cellIndex ? "true" : "false"; }}>
-					{/* TODO */}
+				id={ cellId }
+				aria-selected={selectedState}>
+				<button className="square" tabIndex="-1">
+					{this.props.rowindex + "-" + this.props.cellindex}
 				</button>
 			</div>
 		);
 	}
 }
 class Row extends React.Component {
-	renderSquare(rowIndex, cellIndex) {
+	renderSquare(cellIndex) {
 		return (
-			<Square cellIndex={cellIndex} rowIndex={rowIndex}
-			activeCell={this.props.activeCell} />
+			<Square cellindex={cellIndex} rowindex={this.props.rowindex}
+			activecell={this.props.activecell} />
 		);
 	}
 	render() {
+	const rowId = "row-" + this.props.rowindex;
 		return (
-			<div className="board-row" role="row" id={ () => {return "row-" + this.props.rowIndex}}>
-				{ this.renderSquare(this.props.rowIndex, 0) }
-				{ this.renderSquare(this.props.rowIndex, 1) }
-				{ this.renderSquare(this.props.rowIndex, 2) }
+			<div className="board-row" role="row" id={rowId}>
+				{ this.renderSquare(0) }
+				{ this.renderSquare(1) }
+				{ this.renderSquare(2) }
 			</div>
 		);
 	}
@@ -76,16 +79,16 @@ class Board extends React.Component {
 	handleKeydown(event) {
 		switch(event.keyCode) {
 			case 37:
-				this.navigateUp();
+				this.navigateLeft();
 			break;
 			case 38:
-				this.navigateRight();
+				this.navigateUp();
 			break;
 			case 39:
-				this.navigateDown();
+				this.navigateRight();
 			break;
 			case 40:
-				this.navigateLeft();
+				this.navigateDown();
 			break;
 			case 13:
 			case 32:
@@ -101,8 +104,8 @@ class Board extends React.Component {
 	}
 	renderRow(rowIndex) {
 		return (
-			<Row rowIndex={rowIndex}
-			activeCell={this.state.activeCell}		/>
+			<Row rowindex={rowIndex}
+			activecell={this.state.activeCell}		/>
 		);
 	}
 	render() {
