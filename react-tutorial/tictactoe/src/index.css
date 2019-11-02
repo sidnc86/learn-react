@@ -33,7 +33,7 @@ ol, ul {
 }
 
 .square:focus {
-  outline: none;
+  /*outline: none;*/
 }
 
 .kbd-navigation .square:focus {
@@ -55,5 +55,5 @@ ol, ul {
 	left: -1000px;
 }
 *[aria-selected=true] {
-	border: 1px;
+	border: 1px solid black;
 }

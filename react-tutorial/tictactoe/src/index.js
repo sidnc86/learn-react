@@ -5,13 +5,21 @@ class Square extends React.Component {
 	render() {
 		const cellId = "cell-" + this.props.rowindex + "-" + this.props.cellindex;
 		const selectedState =this.props.activecell == cellId ? "true" : "false";
+		const spanId = "span-" + cellId;
+		let value;
+		if(this.props.value != null) {
+			value = this.props.value;
+		} else {
+			value = <span className="element-invisible" id={spanId}>This cell is empty.</span>;
+		}
 		return (
 			<div role="gridcell" 
 				aria-roledescription="cellButton"
 				id={ cellId }
 				aria-selected={selectedState}>
-				<button className="square" tabIndex="-1">
-					{this.props.rowindex + "-" + this.props.cellindex}
+	<button className="square" tabIndex="-1" 
+		onClick={(event) => {this.props.cellclickhandler(event); }}>
+		{value}
 				</button>
 			</div>
 		);
@@ -21,7 +29,10 @@ class Row extends React.Component {
 	renderSquare(cellIndex) {
 		return (
 			<Square cellindex={cellIndex} rowindex={this.props.rowindex}
-			activecell={this.props.activecell} />
+			activecell={this.props.activecell}
+cellclickhandler={(event) => {this.props.rowclickhandler(event, cellIndex);}}
+value={this.props.value[cellIndex]}
+/>
 		);
 	}
 	render() {
@@ -80,32 +91,57 @@ class Board extends React.Component {
 		switch(event.keyCode) {
 			case 37:
 				this.navigateLeft();
+				event.preventDefault();
 			break;
 			case 38:
 				this.navigateUp();
+				event.preventDefault();
 			break;
 			case 39:
 				this.navigateRight();
+				event.preventDefault();
 			break;
 			case 40:
 				this.navigateDown();
+				event.preventDefault();
 			break;
 			case 13:
 			case 32:
-				this.handleClick();
+				this.handleActivate(event);
 			break;
 			default:
 			
 		}
+	}
+	handleActivate(event) {
+		const grid = this.state.grid.slice();
+		const xIsNext = this.state.xIsNext;
+		let activeCellId;
+		if(event.type == "keydown") {
+			activeCellId = event.currentTarget.getAttribute("aria-activedescendant");
+		} else {
+			activeCellId = event.currentTarget.parentNode.getAttribute("id");
+		}
+		if(grid[this.activeRowIndex][this.activeCellIndex] == null) {
+			grid[this.activeRowIndex][this.activeCellIndex] = xIsNext ? "X" : "O";
+			this.setState({grid: grid, xIsNext: !xIsNext});
+		}
 		event.preventDefault();
 	}
-	handleClick() {
-		alert("clicked");
+	handleClick(event, rowIndex, cellIndex) {
+		this.activeCellIndex = cellIndex;
+		this.activeRowIndex = rowIndex;
+		this.setState({activeCell: "cell-" + rowIndex + "-" + cellIndex});//focusing cell on click
+		this.handleActivate(event);
+		
 	}
 	renderRow(rowIndex) {
 		return (
 			<Row rowindex={rowIndex}
-			activecell={this.state.activeCell}		/>
+			activecell={this.state.activeCell}
+			rowclickhandler={(event, cellIndex) => {this.handleClick(event, rowIndex, cellIndex);}}
+			value={this.state.grid[rowIndex]}
+			/>
 		);
 	}
 	render() {
@@ -113,7 +149,9 @@ class Board extends React.Component {
 		return (
 			<div>
 				<div className="status">{status}</div>
-				<div role="grid" tabIndex="0" aria-activedescendant={this.state.activeCell} onKeyDown={ this.handleKeydown}>
+				<div role="grid" tabIndex="0" aria-activedescendant={this.state.activeCell} 
+					onKeyDown={ this.handleKeydown}
+					>
 					{this.renderRow(0)}
 					{this.renderRow(1)}
 					{this.renderRow(2)}
