@@ -1,6 +1,44 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+class Announcement extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			text: props.text
+		};
+	}
+	render() {
+		return (
+			<span className="element-invisible" aria-live="polite">{this.state.text}</span>
+		);
+	}
+	removeText() {
+		const text = this.state.text;
+		if(text != "") {
+			this.setState({
+				text: ""
+			});
+		}
+	}
+	faidOut() {
+		setTimeout(
+			() => this.removeText(),
+			3000
+		);
+	}
+	componentDidMount() {
+		this.faidOut();
+	}
+	componentDidUpdate(prevProps) {
+		if(this.props.text != prevProps.text) {
+			this.setState({
+				text: this.props.text
+			});
+			this.faidOut();
+		}
+	}
+}
 class Square extends React.Component {
 	render() {
 		const cellId = "cell-" + this.props.rowindex + "-" + this.props.cellindex;
@@ -57,7 +95,8 @@ class Board extends React.Component {
 		this.state = {
 			grid: _grid,
 			activeCell: "cell-0-0",
-			xIsNext: true
+			xIsNext: true,
+			announcementText: ""
 		};
 		this.activeRowIndex = 0;
 		this.activeCellIndex = 0;
@@ -116,15 +155,10 @@ class Board extends React.Component {
 	handleActivate(event) {
 		const grid = this.state.grid.slice();
 		const xIsNext = this.state.xIsNext;
-		let activeCellId;
-		if(event.type == "keydown") {
-			activeCellId = event.currentTarget.getAttribute("aria-activedescendant");
-		} else {
-			activeCellId = event.currentTarget.parentNode.getAttribute("id");
-		}
 		if(grid[this.activeRowIndex][this.activeCellIndex] == null) {
 			grid[this.activeRowIndex][this.activeCellIndex] = xIsNext ? "X" : "O";
-			this.setState({grid: grid, xIsNext: !xIsNext});
+			let announcementText = xIsNext ? "Placed X, next turn: O." : "Placed O, next turn: X.";
+			this.setState({grid: grid, xIsNext: !xIsNext, announcementText: announcementText});
 		}
 		event.preventDefault();
 	}
@@ -149,6 +183,7 @@ class Board extends React.Component {
 		return (
 			<div>
 				<div className="status">{status}</div>
+				<Announcement text={this.state.announcementText} />
 				<div role="grid" tabIndex="0" aria-activedescendant={this.state.activeCell} 
 					onKeyDown={ this.handleKeydown}
 					>
