@@ -7,29 +7,31 @@ ol, ul {
   padding-left: 30px;
 }
 
-.board-row:after {
-  clear: both;
-  content: "";
-  display: table;
+.board-row {
+  flex-direction: row;
+  display: flex;
+  margin-top: -1px;
 }
 
 .status {
   margin-bottom: 10px;
 }
 
+*[role=gridcell] {
+  flex-grow: 1;
+}
+
 .square {
   background: #fff;
   border: 1px solid #999;
-  float: left;
   font-size: 24px;
   font-weight: bold;
   line-height: 34px;
   height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
   padding: 0;
   text-align: center;
   width: 34px;
+  margin-left: 1px;
 }
 
 .square:focus {
@@ -54,6 +56,7 @@ ol, ul {
 	height: 0px;
 	left: -1000px;
 }
-*[aria-selected=true] {
-	border: 1px solid black;
+
+.board-row *[aria-selected=true] .square{
+  outline: 1px solid black;
 }
