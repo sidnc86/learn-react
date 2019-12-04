@@ -60,3 +60,20 @@ ol, ul {
 .board-row *[aria-selected=true] .square{
   outline: 1px solid black;
 }
+
+div[role="grid"]
+{
+  height:100%;
+  width:400px;
+}
+div[role="gridcell"], div[role="gridcell"] button
+{
+  width: 99%;
+  height:99%;
+}
+
+.board-row
+{
+  height:100px;
+}
+
