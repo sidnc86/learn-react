@@ -1,5 +1,4 @@
 import React from 'react'
-import Announcement from './announcement';
 
 class Grid extends React.Component 
 {
@@ -12,7 +11,7 @@ class Grid extends React.Component
 			let row = Array(props.numrows).fill(null);
 			_grid.push(row);
 		}
-		this.state = {grid: _grid, activeCell: "cell-0-0", xIsNext: true, announcementText: ""};
+		this.state = {grid: _grid, activeCell: "cell-0-0" };
 		this.activeRowIndex = 0;
 		this.activeCellIndex = 0;
 		this.handleKeydown = this.handleKeydown.bind(this);
@@ -79,12 +78,10 @@ class Grid extends React.Component
     handleActivate(event)
     {
 		const grid = this.state.grid.slice();
-		const xIsNext = this.state.xIsNext;
-        if(grid[this.activeRowIndex][this.activeCellIndex] == null) 
-        {
-			grid[this.activeRowIndex][this.activeCellIndex] = xIsNext ? "X" : "O";
-			let announcementText = xIsNext ? "Placed X, next turn: O." : "Placed O, next turn: X.";
-			this.setState({grid: grid, xIsNext: !xIsNext, announcementText: announcementText});
+		if(grid[this.activeRowIndex][this.activeCellIndex] == null) 
+		{
+			grid[this.activeRowIndex][this.activeCellIndex] = this.props.oncellactivate(event);
+			this.setState({grid: grid});
 		}
 		event.preventDefault();
 	}
@@ -115,7 +112,6 @@ class Grid extends React.Component
 		return (
 			<div>
 				<div className="status"><strong>{status}</strong></div>
-				<Announcement text={this.state.announcementText} />
 				<div role="grid" tabIndex="0" aria-activedescendant={this.state.activeCell} onKeyDown={ this.handleKeydown}>
 					{ rows }
 				</div>
