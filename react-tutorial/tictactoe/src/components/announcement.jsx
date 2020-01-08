@@ -19,7 +19,7 @@ class Announcement extends React.Component
     removeText() 
     {
 		const text = this.state.text;
-        if(text != "") 
+        if(text !== "") 
         {
 			this.setState({text: ""});
 		}
@@ -37,7 +37,7 @@ class Announcement extends React.Component
 	}
     componentDidUpdate(prevProps) 
     {
-        if(this.props.text != prevProps.text) 
+        if(this.props.text !== prevProps.text) 
         {
 			this.setState({
 				text: this.props.text

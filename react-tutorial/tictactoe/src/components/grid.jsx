@@ -7,9 +7,9 @@ class Grid extends React.Component
     {
 		super(props);
 		let _grid = [];
-        for(let i = 0; i <= 2; i++) 
+        for(let i = 0; i < props.numcols; i++) 
         {
-			let row = Array(3).fill(null);
+			let row = Array(props.numrows).fill(null);
 			_grid.push(row);
 		}
 		this.state = {grid: _grid, activeCell: "cell-0-0", xIsNext: true, announcementText: ""};
@@ -27,7 +27,7 @@ class Grid extends React.Component
 	}
     navigateRight() 
     {
-        if(this.activeCellIndex < 2) 
+        if(this.activeCellIndex < this.props.numcols - 1) 
         {
 			this.activeCellIndex++;
 		}
@@ -43,7 +43,7 @@ class Grid extends React.Component
 	}
     navigateDown() 
     {
-        if(this.activeRowIndex < 2) 
+        if(this.activeRowIndex < this.props.numrows - 1)
         {
 			this.activeRowIndex++;
 		}
@@ -101,20 +101,23 @@ class Grid extends React.Component
 		return (
 			<Row rowindex={rowIndex} activecell={this.state.activeCell} rowclickhandler={(event, cellIndex) => {this.handleClick(event, rowIndex, cellIndex);}}
 			value={this.state.grid[rowIndex]}
+			numcols={ this.props.numcols }
+			key={rowIndex.toString()}
 			/>
 		);
 	}
     render() 
     {
 		const status = 'Next player: X';
+		let rows = [];
+						for(let i = 0; i < this.props.numrows; i++)
+							rows.push(this.renderRow(i));
 		return (
 			<div>
 				<div className="status"><strong>{status}</strong></div>
 				<Announcement text={this.state.announcementText} />
 				<div role="grid" tabIndex="0" aria-activedescendant={this.state.activeCell} onKeyDown={ this.handleKeydown}>
-					{this.renderRow(0)}
-					{this.renderRow(1)}
-					{this.renderRow(2)}
+					{ rows }
 				</div>
 			</div>
 		);
@@ -129,17 +132,19 @@ class Row extends React.Component
 			<Cell cellindex={cellIndex} rowindex={this.props.rowindex} activecell={this.props.activecell}
 				cellclickhandler={(event) => {this.props.rowclickhandler(event, cellIndex);}}
                 value={this.props.value[cellIndex]}
+				key={cellIndex.toString()}
             />  
 		);
 	}
     render() 
     {
 	    const rowId = "row-" + this.props.rowindex;
+		let cells = [];
+		for(let i = 0; i < this.props.numcols; i++)
+			cells.push(this.renderSquare(i));
 		return (
 			<div className="board-row" role="row" id={rowId}>
-				{ this.renderSquare(0) }
-				{ this.renderSquare(1) }
-				{ this.renderSquare(2) }
+				{ cells }
 			</div>
 		);
 	}
@@ -150,7 +155,7 @@ class Cell extends React.Component
     render() 
     {
 		const cellId = "cell-" + this.props.rowindex + "-" + this.props.cellindex;
-		const selectedState =this.props.activecell == cellId ? "true" : "false";
+		const selectedState =this.props.activecell === cellId ? "true" : "false";
 		const spanId = "span-" + cellId;
 		let value;
         if(this.props.value != null) 
